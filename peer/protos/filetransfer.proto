@@ -1,0 +1,21 @@
+syntax = "proto3";
+package p2p;
+
+message FileRequest {
+  string filename = 1;
+}
+
+message FileChunk {
+  bytes data = 1;
+  int32 seq = 2;
+}
+
+message UploadStatus {
+  int64 received_bytes = 1;
+  int32 chunks = 2;
+}
+
+service FileTransfer {
+  rpc DummyDownload (FileRequest) returns (stream FileChunk);
+  rpc DummyUpload (stream FileChunk) returns (UploadStatus);
+}

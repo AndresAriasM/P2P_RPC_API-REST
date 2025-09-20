@@ -1,0 +1,35 @@
+version: "3.9"
+services:
+  peer1:
+    build: .
+    container_name: peer1
+    environment:
+      - PEER_CONFIG=configs/peer1.json
+    volumes:
+      - ./shared/p1:/data
+      - ./configs/peer1.json:/app/configs/peer1.json:ro
+    ports:
+      - "8001:8001"
+      - "50051:50051"
+  peer2:
+    build: .
+    container_name: peer2
+    environment:
+      - PEER_CONFIG=configs/peer2.json
+    volumes:
+      - ./shared/p2:/data
+      - ./configs/peer2.json:/app/configs/peer2.json:ro
+    ports:
+      - "8002:8002"
+      - "50052:50052"
+  peer3:
+    build: .
+    container_name: peer3
+    environment:
+      - PEER_CONFIG=configs/peer3.json
+    volumes:
+      - ./shared/p3:/data
+      - ./configs/peer3.json:/app/configs/peer3.json:ro
+    ports:
+      - "8003:8003"
+      - "50053:50053"

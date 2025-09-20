@@ -1,0 +1,10 @@
+{
+  "name": "peer3",
+  "ip": "0.0.0.0",
+  "rest_port": 8003,
+  "grpc_port": 50053,
+  "shared_dir": "/data",
+  "friend_primary": "http://localhost:8001",
+  "friend_secondary": "http://localhost:8002",
+  "self_url": "http://localhost:8003"
+}
