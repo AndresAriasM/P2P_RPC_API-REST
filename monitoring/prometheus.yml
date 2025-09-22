@@ -1,0 +1,14 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'p2p-peers'
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['peer1:8001', 'peer2:8002', 'peer3:8003', 'peer4:8004']
+    metrics_path: '/metrics'
