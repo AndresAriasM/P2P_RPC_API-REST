@@ -1,0 +1,18 @@
+{
+    "name": "peer4",
+    "ip": "0.0.0.0",
+    "rest_port": 8004,
+    "grpc_port": 50054,
+    "metrics_port": 9004,
+    "shared_dir": "/data",
+    "friend_primary": "http://peer1:8001",
+    "friend_secondary": "http://peer2:8002",
+    "self_url": "http://peer4:8004",
+    "health_check_interval": 30,
+    "search_ttl": 3,
+    "max_fanout": 3,
+    "rate_limit": {
+      "requests_per_minute": 100,
+      "downloads_per_minute": 10
+    }
+  }
