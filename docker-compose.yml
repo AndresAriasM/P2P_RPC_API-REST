@@ -8,9 +8,17 @@ services:
     volumes:
       - ./shared/p1:/data
       - ./configs/peer1.json:/app/configs/peer1.json:ro
+      - peer1_storage:/app/storage
     ports:
       - "8001:8001"
       - "50051:50051"
+      - "9001:9001"  # metrics
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   peer2:
     build: .
     container_name: peer2
@@ -19,9 +27,17 @@ services:
     volumes:
       - ./shared/p2:/data
       - ./configs/peer2.json:/app/configs/peer2.json:ro
+      - peer2_storage:/app/storage
     ports:
       - "8002:8002"
       - "50052:50052"
+      - "9002:9002"  # metrics
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   peer3:
     build: .
     container_name: peer3
@@ -30,6 +46,67 @@ services:
     volumes:
       - ./shared/p3:/data
       - ./configs/peer3.json:/app/configs/peer3.json:ro
+      - peer3_storage:/app/storage
     ports:
       - "8003:8003"
       - "50053:50053"
+      - "9003:9003"  # metrics
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  peer4:
+    build: .
+    container_name: peer4
+    environment:
+      - PEER_CONFIG=configs/peer4.json
+    volumes:
+      - ./shared/p4:/data
+      - ./configs/peer4.json:/app/configs/peer4.json:ro
+      - peer4_storage:/app/storage
+    ports:
+      - "8004:8004"
+      - "50054:50054"
+      - "9004:9004"  # metrics
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: grafana
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana-dashboards:/var/lib/grafana/dashboards
+      - ./monitoring/grafana-provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+
+volumes:
+  peer1_storage:
+  peer2_storage:
+  peer3_storage:
+  peer4_storage:
+  prometheus_data:
+  grafana_data:
