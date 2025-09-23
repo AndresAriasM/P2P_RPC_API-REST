@@ -1,6 +1,14 @@
 # P2P - Comunicación entre procesos (REST + gRPC)
 
-Este repo implementa un sistema P2P **no estructurado** con servicios de **Directorio/Localización** vía **REST** y servicios ECO/DUMMY de **carga/descarga** vía **gRPC**. Cada contenedor representa un *peer* con microservicios separados (REST + gRPC), soporte de concurrencia y lectura dinámica de configuración (JSON).
+Este proyecto implementa un sistema peer-to-peer (P2P) no estructurado, combinando:
+
+REST (FastAPI) → Para registro, localización y búsqueda de archivos.
+
+gRPC → Para simular transferencia de archivos (subida y descarga) con servicios ECO/DUMMY.
+
+Docker + docker-compose → Cada contenedor representa un peer, con microservicios independientes (REST y gRPC).
+
+Configuración dinámica → Cada peer lee sus parámetros desde un archivo JSON.
 
 ## Arquitectura (resumen)
 - **REST (FastAPI)**: `/register`, `/bootstrap`, `/files`, `/peers`, `/search`
