@@ -1,78 +1,64 @@
-import asyncio
-import httpx
-import logging
-from typing import List, Dict, Any
-from .state import PeerState
+import hashlib
+from pathlib import Path
+from typing import List, Dict
 
-logger = logging.getLogger(__name__)
+def calculate_checksum(file_path: Path) -> str:
+    """Calculate SHA256 checksum of a file"""
+    try:
+        sha256_hash = hashlib.sha256()
+        with open(file_path, "rb") as f:
+            for byte_block in iter(lambda: f.read(4096), b""):
+                sha256_hash.update(byte_block)
+        return sha256_hash.hexdigest()[:16]  # First 16 chars for brevity
+    except Exception:
+        return ""
 
-class HealthChecker:
-    def __init__(self, state: PeerState, check_interval: int = 30):
-        self.state = state
-        self.check_interval = check_interval
-        self.running = False
-        self._task = None
-
-    async def start(self):
-        """Start the health check background task"""
-        if self.running:
-            return
-        
-        self.running = True
-        self._task = asyncio.create_task(self._health_check_loop())
-        logger.info(f"Health checker started with {self.check_interval}s interval")
-
-    async def stop(self):
-        """Stop the health check background task"""
-        self.running = False
-        if self._task:
-            self._task.cancel()
+def list_files(shared_dir: str) -> List[Dict]:
+    """List files with enhanced metadata including checksums"""
+    p = Path(shared_dir)
+    files: List[Dict] = []
+    
+    if not p.exists():
+        return files
+    
+    for f in p.iterdir():
+        if f.is_file():
             try:
-                await self._task
-            except asyncio.CancelledError:
-                pass
+                stat = f.stat()
+                files.append({
+                    "name": f.name,
+                    "size": stat.st_size,
+                    "mtime": int(stat.st_mtime),
+                    "checksum": calculate_checksum(f),
+                    "extension": f.suffix.lower(),
+                    "type": _get_file_type(f.suffix.lower())
+                })
+            except Exception:
+                # Skip files that can't be read
+                continue
+    
+    return sorted(files, key=lambda x: x["name"])
 
-    async def _health_check_loop(self):
-        """Main health check loop"""
-        while self.running:
-            try:
-                await self._check_all_peers()
-                await asyncio.sleep(self.check_interval)
-            except asyncio.CancelledError:
-                break
-            except Exception as e:
-                logger.error(f"Health check error: {e}")
-                await asyncio.sleep(5)  # Short delay on error
-
-    async def _check_all_peers(self):
-        """Check health of all known peers"""
-        peers = [p for p in self.state.list_peers() if p != self.state.self_url]
-        if not peers:
-            return
-
-        async with httpx.AsyncClient(timeout=10) as client:
-            tasks = [self._check_peer_health(client, peer) for peer in peers]
-            results = await asyncio.gather(*tasks, return_exceptions=True)
-            
-            for peer, result in zip(peers, results):
-                if isinstance(result, Exception) or not result:
-                    self.state.mark_peer_failed(peer)
-                    logger.warning(f"Peer {peer} marked as unhealthy")
-                else:
-                    self.state.mark_peer_healthy(peer)
-
-        # Clean up old peers
-        self.state.prune()
-
-    async def _check_peer_health(self, client: httpx.AsyncClient, peer_url: str) -> bool:
-        """Check health of a single peer"""
-        try:
-            response = await client.get(f"{peer_url}/health")
-            return response.status_code == 200
-        except Exception:
-            return False
-
-    async def check_peer_immediate(self, peer_url: str) -> bool:
-        """Check health of a specific peer immediately"""
-        async with httpx.AsyncClient(timeout=5) as client:
-            return await self._check_peer_health(client, peer_url)
+def _get_file_type(extension: str) -> str:
+    """Categorize file by extension"""
+    text_ext = {".txt", ".md", ".log", ".json", ".xml", ".csv"}
+    image_ext = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".svg"}
+    video_ext = {".mp4", ".avi", ".mkv", ".mov", ".wmv", ".flv"}
+    audio_ext = {".mp3", ".wav", ".flac", ".aac", ".ogg"}
+    doc_ext = {".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx"}
+    code_ext = {".py", ".js", ".java", ".cpp", ".c", ".h", ".go", ".rs"}
+    
+    if extension in text_ext:
+        return "text"
+    elif extension in image_ext:
+        return "image"
+    elif extension in video_ext:
+        return "video"
+    elif extension in audio_ext:
+        return "audio"
+    elif extension in doc_ext:
+        return "document"
+    elif extension in code_ext:
+        return "code"
+    else:
+        return "other"
