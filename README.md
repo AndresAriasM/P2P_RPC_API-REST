@@ -55,3 +55,5 @@ bash scripts/demo.sh
 - Código organizado en `peer/` y cliente CLI en `client.py`.
 - Pruebas mínimas en `tests/` (extiéndelas).
 
+## 📄 Informe técnico
+El informe completo con objetivos, marco teórico, arquitectura, APIs y resultados se encuentra en [report.md](./report.md).
