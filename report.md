@@ -60,3 +60,37 @@ Ejemplo (`peer1.json`):
   "search_ttl": 3,
   "max_fanout": 3
 }
+
+## 5. Protocolos y APIs
+- **REST**: JSON sobre HTTP, usado para registro, búsqueda, directorio y estado.  
+- **gRPC**: protocolo binario eficiente sobre HTTP/2, usado para la transferencia ECO/DUMMY de archivos.  
+- **Prometheus**: expone métricas en `/metrics` para monitoreo del sistema.  
+
+---
+
+## 6. Entorno de Ejecución
+- **Lenguaje**: Python 3.11  
+- **Frameworks**: FastAPI, Uvicorn, gRPC (`grpc.aio`), Prometheus-client  
+- **Contenedores**: Docker y docker-compose para levantar múltiples peers.  
+- **Despliegue**:  
+  - **Localhost**: varios peers en contenedores distintos.  
+  - **AWS Academy/EC2**: un peer por instancia, con puertos REST y gRPC expuestos.  
+
+---
+
+## 7. Pruebas y Resultados
+- **Búsquedas distribuidas**: desde un peer con fanout=3, lograron alcanzar todos los nodos de la red.  
+- **Transferencias simuladas**: descargas y subidas exitosas con gRPC, mostrando progreso, velocidad y tiempo total.  
+- **Concurrencia**: múltiples clientes consultaron y transfirieron simultáneamente sin errores.  
+- **Manejo de fallos**: al desconectar un peer, las búsquedas siguieron resolviendo gracias a peers alternativos.  
+- **Métricas observadas**: número de requests, peers saludables, resultados de búsqueda y bytes transferidos.  
+
+---
+
+## 8. Conclusiones
+- Se implementó un sistema **P2P no estructurado** con **REST + gRPC**, cumpliendo los objetivos académicos.  
+- La configuración dinámica por JSON hace el sistema **escalable y flexible**: basta añadir un archivo `peerN.json` para incluir un nuevo nodo.  
+- El sistema demostró **tolerancia a fallos** y buena capacidad de concurrencia en las pruebas.  
+- Es **modular y extensible**, permitiendo agregar nuevas funcionalidades como transferencia real de archivos o seguridad.  
+
+
