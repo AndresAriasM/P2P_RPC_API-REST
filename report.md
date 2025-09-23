@@ -60,6 +60,9 @@ Ejemplo (`peer1.json`):
   "search_ttl": 3,
   "max_fanout": 3
 }
+```
+
+---
 
 ## 5. Protocolos y APIs
 - **REST**: JSON sobre HTTP, usado para registro, búsqueda, directorio y estado.  
@@ -92,5 +95,3 @@ Ejemplo (`peer1.json`):
 - La configuración dinámica por JSON hace el sistema **escalable y flexible**: basta añadir un archivo `peerN.json` para incluir un nuevo nodo.  
 - El sistema demostró **tolerancia a fallos** y buena capacidad de concurrencia en las pruebas.  
 - Es **modular y extensible**, permitiendo agregar nuevas funcionalidades como transferencia real de archivos o seguridad.  
-
-
