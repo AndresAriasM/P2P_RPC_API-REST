@@ -1,8 +1,10 @@
 # P2P - Comunicación entre procesos (REST + gRPC)
 
 Sebastián Muñoz Castañeda
+
 Andres Arias Medina
-Argenis Eduardo Omañan
+
+Argenis Eduardo Omaña
 
 
 Este repo implementa un sistema P2P **no estructurado** con servicios de **Directorio/Localización** vía **REST** y servicios ECO/DUMMY de **carga/descarga** vía **gRPC**. Cada contenedor representa un *peer* con microservicios separados (REST + gRPC), soporte de concurrencia y lectura dinámica de configuración (JSON).
