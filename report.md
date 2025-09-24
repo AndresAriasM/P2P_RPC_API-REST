@@ -89,7 +89,7 @@ Ejemplo (`peer1.json`):
 - **Métricas observadas**: número de requests, peers saludables, resultados de búsqueda y bytes transferidos.  
 
 ![Grafana](Grafana.jpeg)
-![Prometeus](Prometeus.jpeg)
+![Prometeus](Prometheus.jpeg)
 ---
 
 ## 8. Conclusiones
@@ -97,6 +97,7 @@ Ejemplo (`peer1.json`):
 - La configuración dinámica por JSON hace el sistema **escalable y flexible**: basta añadir un archivo `peerN.json` para incluir un nuevo nodo.  
 - El sistema demostró **tolerancia a fallos** y buena capacidad de concurrencia en las pruebas.  
 - Es **modular y extensible**, permitiendo agregar nuevas funcionalidades como transferencia real de archivos o seguridad.  
+
 
 
 
